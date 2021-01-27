@@ -2,11 +2,15 @@ package refresh
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/skeptycal/util/gofile"
+)
+
+const (
+	modeNewDir  = 0o755
+	modeNewFile = 0o644
 )
 
 var refreshContext context.Context = context.Background()
@@ -39,21 +43,31 @@ func RefreshRepo(ctx context.Context, dir string, init bool) error {
 	return nil
 }
 
-func CheckRepo(ctx context.Context, dir string, init bool) error {
+func CheckRepo(ctx context.Context, dir string, init bool) (string, error) {
 	if dir == "" {
 		dir = gofile.PWD()
 	}
 
 	dir, err := filepath.Abs(dir)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return err
+		if !os.IsNotExist(err) {
+			return "", err
+        }
+        if !init {
+            return "", err
+        }
+        err = os.MkdirAll(dir, modeNewDir)
+        if err != nil {
+            return "", err
 		}
-	}
-	dir = gofile.Abs(dir)
+    }
 
-	if !gofile.Exists(dir) {
-		return fmt.Errorf("path not found: %v", dir)
-	}
+    if gorepo.
 
+	return dir, nil
+}
+
+func Template(ctx context.Context, dir string) error {
+
+	return nil
 }
